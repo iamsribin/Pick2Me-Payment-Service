@@ -14,11 +14,6 @@ const startServer = async () => {
     connectDB(process.env.MONGO_URL!);
     await connectSQL();
 
-    await RabbitMQ.connect({
-      url: process.env.RABBIT_URL!,
-      serviceName: 'payment-service',
-    });
-
     await UserEventConsumer.init();
 
     startGrpcServer();
