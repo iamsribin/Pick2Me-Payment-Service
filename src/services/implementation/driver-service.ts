@@ -10,12 +10,13 @@ export default class DriverWalletService implements IDriverWalletService {
   constructor(
     @inject(TYPES.DriverStripeRepository) private _driverStripRepo: IDriverStripeRepository
   ) {}
+
   async createDriverConnectAccount(
     email: string,
     driverId: string
   ): Promise<{ accountId: string; accountLinkUrl: string }> {
     try {
-      const account = stripe.accounts.create({
+      const account = await stripe.accounts.create({
         type: 'express',
         country: 'US',
         email: email,
@@ -24,23 +25,28 @@ export default class DriverWalletService implements IDriverWalletService {
           transfers: { requested: true },
         },
         business_type: 'individual',
-
         metadata: {
           driver_id: driverId,
         },
       });
 
-      const account_id = (await account).id;
-
       const accountLink = await stripe.accountLinks.create({
-        account: account_id,
-        refresh_url: `${process.env.FRONTEND_URL}/onboard/refresh`,
-        return_url: `${process.env.FRONTEND_URL}/onboard/complete`,
+        account: account.id,
+        refresh_url: `${process.env.FRONTEND_URL}/driver/wallet`,
+        return_url: `${process.env.FRONTEND_URL}/driver/wallet`,
         type: 'account_onboarding',
       });
 
-      return { accountId: account_id, accountLinkUrl: accountLink.url };
+      await this._driverStripRepo.create({
+        account_id: account.id,
+        accountLink: accountLink.url,
+        driverId,
+        email,
+      });
+
+      return { accountId: account.id, accountLinkUrl: accountLink.url };
     } catch (error) {
+      console.log(error);
       throw new Error('Stripe account creation failed');
     }
   }
@@ -48,25 +54,107 @@ export default class DriverWalletService implements IDriverWalletService {
   async stripeOnboardingView(driverId: string) {
     try {
       const driverStripe = await this._driverStripRepo.findOne({ driverId });
-      if (!driverStripe) throw NotFoundError('driver not found');
+      if (!driverStripe) throw NotFoundError('Driver Stripe account not found');
 
       const account = await stripe.accounts.retrieve(driverStripe.account_id);
 
-      const req = account.requirements;
-      const requirements_due =
-        (req?.past_due?.length ?? 0) > 0 ||
-        (req?.eventually_due?.length ?? 0) > 0 ||
-        (req?.currently_due?.length ?? 0) > 0;
-
       return {
-        status: 'onboarded',
-        details_submitted: account.details_submitted,
-        payouts_enabled: account.payouts_enabled,
-        charges_enabled: account.charges_enabled,
-        requirements_due,
-        detail: 'Stripe account linked.',
+        accountId: account.id,
+        onboardingComplete: account.details_submitted,
+        chargesEnabled: account.charges_enabled,
+        payoutsEnabled: account.payouts_enabled,
+        requirements: account.requirements,
+        accountLinkUrl: driverStripe.accountLink,
       };
     } catch (error) {
+      console.log(error);
+      if (error instanceof HttpError) throw error;
+      throw InternalError('something went wrong');
+    }
+  }
+
+  async getDriverWalletDetails(driverId: string) {
+    try {
+      const driverStripe = await this._driverStripRepo.findOne({ driverId });
+      console.log(driverStripe);
+
+      if (!driverStripe) {
+        return {
+          hasAccount: false,
+          message: 'No Stripe account found. Please contact admin.',
+        };
+      }
+
+      const account = await stripe.accounts.retrieve(driverStripe.account_id);
+      console.log('account', account);
+
+      if (!account.details_submitted) {
+        return {
+          hasAccount: true,
+          onboardingComplete: false,
+          accountLinkUrl: driverStripe.accountLink,
+          accountId: account.id,
+        };
+      }
+
+      const balance = await stripe.balance.retrieve({
+        stripeAccount: driverStripe.account_id,
+      });
+
+      const payouts = await stripe.payouts.list(
+        { limit: 10 },
+        { stripeAccount: driverStripe.account_id }
+      );
+
+      const transfers = await stripe.transfers.list({ limit: 10 });
+
+      const driverTransfers = transfers.data.filter(
+        (transfer) => transfer.destination === driverStripe.account_id
+      );
+
+      return {
+        hasAccount: true,
+        onboardingComplete: true,
+        accountId: account.id,
+        chargesEnabled: account.charges_enabled,
+        payoutsEnabled: account.payouts_enabled,
+        balance: {
+          available: balance.available,
+          pending: balance.pending,
+        },
+        transactions: {
+          payouts: payouts.data,
+          transfers: driverTransfers,
+        },
+        email: account.email,
+      };
+    } catch (error) {
+      console.log(error);
+      if (error instanceof HttpError) throw error;
+      throw InternalError('something went wrong');
+    }
+  }
+
+  async refreshOnboardingLink(driverId: string) {
+    try {
+      const driverStripe = await this._driverStripRepo.findOne({ driverId });
+      if (!driverStripe) throw NotFoundError('Driver Stripe account not found');
+
+      const accountLink = await stripe.accountLinks.create({
+        account: driverStripe.account_id,
+        refresh_url: `${process.env.FRONTEND_URL}/driver/wallet`,
+        return_url: `${process.env.FRONTEND_URL}/driver/wallet`,
+        type: 'account_onboarding',
+      });
+
+      // Update the link in database
+      await this._driverStripRepo.update(driverId, { accountLink: accountLink.url });
+
+      return {
+        accountLinkUrl: accountLink.url,
+      };
+    } catch (error) {
+      console.log(error);
       if (error instanceof HttpError) throw error;
       throw InternalError('something went wrong');
     }

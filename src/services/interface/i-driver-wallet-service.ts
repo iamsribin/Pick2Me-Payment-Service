@@ -5,4 +5,6 @@ export interface IDriverWalletService {
   ): Promise<{ accountId: string; accountLinkUrl: string }>;
 
   stripeOnboardingView(driverId: string);
+  getDriverWalletDetails(driverId: string);
+  refreshOnboardingLink(driverId: string) 
 }

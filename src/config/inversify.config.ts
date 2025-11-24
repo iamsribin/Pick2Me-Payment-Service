@@ -21,11 +21,13 @@ import { Repository } from 'typeorm';
 import { DriverStripeRepository } from '@/repositories/implementation/driver-stripe.repository';
 import { IDriverStripeRepository } from '@/repositories/interfaces/i-driver-strip-repository';
 import { DriverStripe } from '@/entity/driver-sripe.entity';
+import { DriverController } from '@/controllers/driver-controller';
 
 const container = new Container();
 
 container.bind<GrpcPaymentController>(TYPES.GrpcPaymentController).to(GrpcPaymentController);
 container.bind<PaymentController>(TYPES.PaymentController).to(PaymentController);
+container.bind<DriverController>(TYPES.DriverController).to(DriverController);
 
 container.bind<IDriverWalletService>(TYPES.DriverWalletService).to(DriverWalletService);
 container.bind<IPaymentService>(TYPES.PaymentService).to(PaymentService);

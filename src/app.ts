@@ -24,7 +24,7 @@ app.register(cookie);
 app.register(verifyGatewayJwtPlugin);
 
 app.register(userRoutes, { prefix: '/' });
-app.register(driverRoutes, { prefix: '/' });
+app.register(driverRoutes, { prefix: '/drivers' });
 
 app.register(errorHandlerPlugin);
 

@@ -11,7 +11,7 @@ export class DriverStripe {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @Column({ type: 'uuid' })
+  @Column({ type: 'text' })
   driverId!: string;
 
   @Column({ type: 'text' })
