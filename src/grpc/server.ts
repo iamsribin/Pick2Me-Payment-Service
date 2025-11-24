@@ -1,5 +1,5 @@
 import * as grpc from '@grpc/grpc-js';
-import { paymentServiceDescriptor } from '@Pick2Me/shared';
+import { paymentServiceDescriptor } from '@Pick2Me/shared/protos';
 import { createPaymentHandlers } from './handlers/handler';
 import { container } from '../config/inversify.config';
 import { TYPES } from '../types/inversify-types';

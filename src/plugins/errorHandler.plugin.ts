@@ -1,6 +1,6 @@
 import fp from 'fastify-plugin';
 import { FastifyPluginAsync } from 'fastify';
-import { HttpError } from '@Pick2Me/shared';
+import { HttpError } from '@Pick2Me/shared/errors';
 
 const errorHandlerPlugin: FastifyPluginAsync = async (fastify) => {
   fastify.setErrorHandler((err, request, reply) => {

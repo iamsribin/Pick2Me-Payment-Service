@@ -4,17 +4,17 @@ import app from './app';
 import { connectSQL } from './config/sql-db';
 import { startGrpcServer } from './grpc/server';
 import { isEnvDefined } from './utils/envChecker';
-import { connectDB, RabbitMQ } from '@Pick2Me/shared';
+// import { connectDB } from '@Pick2Me/shared/mongo';
 import { UserEventConsumer } from './events/consumer';
 
 const startServer = async () => {
   try {
     isEnvDefined();
 
-    connectDB(process.env.MONGO_URL!);
+    // connectDB(process.env.MONGO_URL!);
     await connectSQL();
 
-    await UserEventConsumer.init();
+    // await UserEventConsumer.init();
 
     startGrpcServer();
 

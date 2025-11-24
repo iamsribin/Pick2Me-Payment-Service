@@ -1,7 +1,7 @@
 import { container } from '@/config/inversify.config';
 import { IUserWalletService } from '@/services/interface/i-user-waller-service';
 import { TYPES } from '@/types/inversify-types';
-import { EXCHANGES, QUEUES, RabbitMQ, ROUTING_KEYS } from '@Pick2Me/shared';
+import { EXCHANGES, QUEUES, RabbitMQ, ROUTING_KEYS } from '@Pick2Me/shared/messaging';
 
 const userWalletService = container.get<IUserWalletService>(TYPES.UserWalletService);
 

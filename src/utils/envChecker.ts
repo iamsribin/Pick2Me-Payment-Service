@@ -1,4 +1,4 @@
-import { envChecker } from '@Pick2Me/shared';
+import { envChecker } from '@Pick2Me/shared/utils';
 
 export const isEnvDefined = () => {
   envChecker(process.env.MONGO_URL, 'MONGO_URL');

@@ -8,6 +8,8 @@ export const TYPES = {
   UserWalletService: Symbol.for('UserWalletService'),
 
   WalletRepository: Symbol.for('WalletRepository'),
+  DriverStripeRepository: Symbol.for('DriverStripeRepository'),
   TransactionRepository: Symbol.for('TransactionRepository'),
   WalletRepositoryToken: Symbol.for('WalletRepositoryToken'),
+  DriverStripeRepositoryToken: Symbol.for('DriverStripeRepositoryToken'),
 };

@@ -35,7 +35,7 @@
   },
   "dependencies": {
     "@grpc/grpc-js": "^1.13.4",
-    "@Pick2Me/shared": "file:../Retro-Routes-Shared/Pick2Me-shared-1.0.1.tgz",
+    "@Pick2Me/shared": "file:../Pick2Me-Shared/Pick2Me-shared-1.0.1.tgz",
     "@types/amqplib": "^0.10.7",
     "amqplib": "^0.10.8",
     "cookie-parser": "^1.4.7",

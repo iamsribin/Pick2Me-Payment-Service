@@ -4,9 +4,10 @@ import { IPaymentService } from '../services/interface/i-payment-service';
 import { PaymentReq } from '../types/request';
 import { IncomingHttpHeaders } from 'http';
 import { IStripeService } from '../services/interface/i-stripe-service';
-import { InternalError, IResponse } from '@Pick2Me/shared';
+import { InternalError } from '@Pick2Me/shared/errors';
 import { inject, injectable } from 'inversify';
 import { TYPES } from '@/types/inversify-types';
+import { IResponse } from '@Pick2Me/shared/interfaces';
 
 @injectable()
 export class PaymentController {

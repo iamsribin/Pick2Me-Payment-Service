@@ -13,10 +13,11 @@ import {
   markBookingAsPaid,
 } from '../../grpc/clients/booking-client';
 import { ConformCashPaymentDto } from '../../dto/paymentRes.dto';
-import { getRedisService, StatusCode } from '@Pick2Me/shared';
+import {StatusCode } from '@Pick2Me/shared/interfaces';
 import { inject, injectable } from 'inversify';
 import { TYPES } from '@/types/inversify-types';
 import { ITransactionRepository } from '@/repositories/interfaces/repository';
+import { getRedisService } from '@Pick2Me/shared/redis';
 
 @injectable()
 export class StripeService implements IStripeService {
@@ -51,7 +52,7 @@ export class StripeService implements IStripeService {
 
       //Redis cache
       const redisRepo = getRedisService();
-      let driverDetails = (await redisRepo.getDriverDetails(data.driverId, true)) as any;
+      let driverDetails = (await redisRepo.getOnlineDriverDetails(data.driverId)) as any;
 
       console.log('driverDetails redis', driverDetails);
 

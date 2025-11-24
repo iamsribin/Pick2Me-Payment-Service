@@ -1,7 +1,8 @@
 import Fastify from 'fastify';
 import cookie from 'fastify-cookie';
 import errorHandlerPlugin from '@/plugins/errorHandler.plugin';
-import walletRoutes from '@/routes/wallet-routes';
+import userRoutes from '@/routes/user-routes';
+import driverRoutes from '@/routes/driver-routes';
 import verifyGatewayJwtPlugin from '@/plugins/verifyGatewayJwt.plugin';
 
 const app = Fastify({
@@ -22,7 +23,8 @@ app.register(cookie);
 
 app.register(verifyGatewayJwtPlugin);
 
-app.register(walletRoutes, { prefix: '/' });
+app.register(userRoutes, { prefix: '/' });
+app.register(driverRoutes, { prefix: '/' });
 
 app.register(errorHandlerPlugin);
 

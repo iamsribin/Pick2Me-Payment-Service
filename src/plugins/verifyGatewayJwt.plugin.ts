@@ -1,7 +1,8 @@
 import fp from 'fastify-plugin';
 import { FastifyPluginAsync } from 'fastify';
 import jwt from 'jsonwebtoken';
-import { AccessPayload, IRole, StatusCode } from '@Pick2Me/shared';
+import { IRole, StatusCode } from '@Pick2Me/shared/interfaces';
+import { AccessPayload } from '@Pick2Me/shared/auth';
 
 export interface VerifyOpts {
   strict?: boolean;

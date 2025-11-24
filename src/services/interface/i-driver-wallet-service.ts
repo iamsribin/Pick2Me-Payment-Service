@@ -3,4 +3,6 @@ export interface IDriverWalletService {
     email: string,
     driverId: string
   ): Promise<{ accountId: string; accountLinkUrl: string }>;
+
+  stripeOnboardingView(driverId: string);
 }
