@@ -9,5 +9,6 @@ export function createPaymentHandlers(controller: Handlers) {
   return {
     CreateDriverConnectAccount: grpcPaymentController.createDriverConnectAccount,
     GetUserWalletBalanceAndTransactions: grpcPaymentController.getUserWalletBalanceAndTransactions,
+    CheckDriverOnboardingStatus: grpcPaymentController.checkDriverOnboardingStatus,
   };
 }

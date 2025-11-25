@@ -7,8 +7,7 @@ import { IUserWalletService } from '@/services/interface/i-user-waller-service';
 @injectable()
 export class GrpcPaymentController {
   constructor(
-    @inject(TYPES.DriverWalletService)
-    private _driverWalletService: IDriverWalletService,
+    @inject(TYPES.DriverWalletService) private _driverWalletService: IDriverWalletService,
     @inject(TYPES.UserWalletService) private _userWalletService: IUserWalletService
   ) {}
 
@@ -47,6 +46,21 @@ export class GrpcPaymentController {
     } catch (error) {
       console.log(error);
 
+      callback(error as Error, null);
+    }
+  };
+
+  checkDriverOnboardingStatus = async (
+    call: ServerUnaryCall<{ driverId: string }, { onboardingStatus: boolean }>,
+    callback: sendUnaryData<{ onboardingStatus: boolean }>
+  ): Promise<void> => {
+    try {
+      const response = await this._driverWalletService.checkDriverOnboardingStatus(
+        call.request.driverId
+      );
+      callback(null, response);
+    } catch (error) {
+      console.log(error);
       callback(error as Error, null);
     }
   };
