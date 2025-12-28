@@ -10,4 +10,5 @@ export interface IUserWalletService {
   ): Promise<{ balance: string; transactions: number }>;
 
   addRewardAmountToUserWallet(userId: string): Promise<void>;
+  doPayment(userId: string, paymentData: any): Promise<void>;
 }

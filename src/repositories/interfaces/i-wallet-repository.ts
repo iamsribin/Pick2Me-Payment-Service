@@ -1,7 +1,8 @@
 import { Wallet } from '@/entity/wallet.entity';
+import { ISqlBaseRepository } from '@Pick2Me/shared/sql';
 import { QueryRunner } from 'typeorm';
 
-export interface IWalletRepository {
+export interface IWalletRepository extends ISqlBaseRepository<Wallet> {
   createIfNotExists(userId: string, currency?: string);
   getUserWalletBalanceAndTransactions(
     userId: string,
@@ -36,4 +37,5 @@ export interface IWalletRepository {
     metadata?: any;
   });
   addRewardAmountToUserWallet(userId: string, amount: number);
+  createQueryRunner();
 }

@@ -55,9 +55,11 @@ export class GrpcPaymentController {
     callback: sendUnaryData<{ onboardingStatus: boolean }>
   ): Promise<void> => {
     try {
+
       const response = await this._driverWalletService.checkDriverOnboardingStatus(
         call.request.driverId
       );
+
       callback(null, response);
     } catch (error) {
       console.log(error);

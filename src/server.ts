@@ -14,7 +14,7 @@ const startServer = async () => {
     // connectDB(process.env.MONGO_URL!);
     await connectSQL();
 
-    // await UserEventConsumer.init();
+    await UserEventConsumer.init();
 
     startGrpcServer();
 

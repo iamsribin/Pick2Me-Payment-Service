@@ -181,4 +181,5 @@ export default class DriverWalletService implements IDriverWalletService {
       throw InternalError('something went wrong');
     }
   }
+  
 }
