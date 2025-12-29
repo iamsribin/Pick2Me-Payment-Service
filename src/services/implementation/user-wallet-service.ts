@@ -3,13 +3,13 @@ import { inject, injectable } from 'inversify';
 import { TYPES } from '@/types/inversify-types';
 import { IWalletRepository } from '@/repositories/interfaces/i-wallet-repository';
 import { BadRequestError, InternalError, NotFoundError } from '@Pick2Me/shared/errors';
-import { IDriverWalletService } from '../interface/i-driver-wallet-service';
 import { WalletTransaction } from '@/entity/wallet-transaction.entity';
 import { Wallet } from '@/entity/wallet.entity';
 import { stripe } from '@/config/stripe';
 import { IDriverStripeRepository } from '@/repositories/interfaces/i-driver-strip-repository';
 import { convertCurrency, getAvailableBalanceForCurrency } from '@/utils/currency';
-import { log } from '@grpc/grpc-js/build/src/logging';
+import { EventProducer } from '@/events/publisher';
+import { PaymentReq } from '@/types/request';
 
 @injectable()
 export class UserWalletService implements IUserWalletService {
@@ -44,7 +44,7 @@ export class UserWalletService implements IUserWalletService {
     return Promise.resolve();
   };
 
-  doPayment = async (userId: string, paymentData: any): Promise<void> => {
+  transferAmountToDriverStripe = async (userId: string, paymentData: PaymentReq): Promise<void> => {
     const { amount: rawAmount, bookingId, driverId } = paymentData ?? {};
     if (!rawAmount || rawAmount <= 0) throw BadRequestError('Invalid payment amount');
     if (!bookingId) throw BadRequestError('Booking reference missing');
@@ -238,7 +238,8 @@ export class UserWalletService implements IUserWalletService {
       );
 
       await settleRunner.commitTransaction();
-      console.log("complete full");
+      // paymentData.amount = driverShare;
+      EventProducer.MarkPaymentCompleted(paymentData);
 
       return;
     } catch (err) {

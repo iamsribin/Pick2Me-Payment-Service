@@ -71,7 +71,7 @@ export class PaymentController {
     try {
       const user = request.gatewayUser;
       const paymentData = request.body;
-      const response = await this._walletService.doPayment(user.id, paymentData);
+      const response = await this._walletService.transferAmountToDriverStripe(user.id, paymentData);
       return reply.status(200).send(response);
     } catch (error) {
       console.log(error);

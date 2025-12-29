@@ -1,37 +1,37 @@
+import { PaymentReq } from '@/types/request';
 import { EXCHANGES, RabbitMQ, ROUTING_KEYS } from '@Pick2Me/shared/messaging';
+import { AnyARecord } from 'node:dns';
 const url = process.env.RABBIT_URL!;
 
 export class EventProducer {
     static async init() {
-        await RabbitMQ.connect({ url, serviceName: 'realtime-service' });
-        await RabbitMQ.setupExchange(EXCHANGES.NOTIFICATION, 'topic');
+        await RabbitMQ.connect({ url, serviceName: 'payment-service' });
+        await RabbitMQ.setupExchange(EXCHANGES.PAYMENT, 'topic');
     }
 
-    static async BookingMarkPayment(data: { driverId: string; status: string }) {
+    static async MarkPaymentCompleted(data: PaymentReq) {
         this.init();
-        const updateDriverRideStatusCountPayload = {
-            data,
-            type: ROUTING_KEYS.UPDATE_DRIVER_RIDE_COUNT,
-        };
-        await RabbitMQ.publish(
-            EXCHANGES.NOTIFICATION,
-            ROUTING_KEYS.UPDATE_DRIVER_RIDE_COUNT,
-            updateDriverRideStatusCountPayload
-        );
-        console.log('publish INCREASE_DRIVER_RIDE_COUNT');
-    }
 
-    static async updateDriverEarnings(data: { driverId: string; status: string }) {
-        this.init();
-        const updateDriverRideStatusCountPayload = {
+        const updateDriverEarnings = {
             data,
-            type: ROUTING_KEYS.UPDATE_DRIVER_RIDE_COUNT,
+            type: ROUTING_KEYS.UPDATE_DRIVER_EARNINGS,
         };
+
         await RabbitMQ.publish(
-            EXCHANGES.NOTIFICATION,
-            ROUTING_KEYS.UPDATE_DRIVER_RIDE_COUNT,
-            updateDriverRideStatusCountPayload
+            EXCHANGES.DRIVER,
+            ROUTING_KEYS.UPDATE_DRIVER_EARNINGS,
+            updateDriverEarnings
         );
-        console.log('publish INCREASE_DRIVER_RIDE_COUNT');
+
+        const markPaymentCompleted = {
+            data,
+            type: ROUTING_KEYS.MARK_PAYMENT_COMPLETED,
+        };
+
+        await RabbitMQ.publish(
+            EXCHANGES.DRIVER,
+            ROUTING_KEYS.MARK_PAYMENT_COMPLETED,
+            markPaymentCompleted
+        );
     }
 }

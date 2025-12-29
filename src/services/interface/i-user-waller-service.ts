@@ -1,3 +1,5 @@
+import { PaymentReq } from '@/types/request';
+
 export interface IUserWalletService {
   createWalletForUser(userData: {
     userId: string;
@@ -10,5 +12,5 @@ export interface IUserWalletService {
   ): Promise<{ balance: string; transactions: number }>;
 
   addRewardAmountToUserWallet(userId: string): Promise<void>;
-  doPayment(userId: string, paymentData: any): Promise<void>;
+ transferAmountToDriverStripe(userId: string, paymentData: PaymentReq): Promise<void>;
 }
