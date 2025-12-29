@@ -1,5 +1,4 @@
 import { ConformCashPaymentDto } from '@/dto/paymentRes.dto';
-import { RabbitMQPublisher } from '@/events/publisher';
 import { randomUUID } from 'crypto';
 import { IPaymentService } from '../interface/i-payment-service';
 import { addDriverEarnings, markBookingAsPaid } from '@/grpc/clients/booking-client';
@@ -72,7 +71,7 @@ export class PaymentService implements IPaymentService {
       );
 
       await this._transactionRepository.updateStatusByKey(idempotencyKey, 'completed');
-      RabbitMQPublisher.publish('payment.completed', data);
+      // RabbitMQPublisher.publish('payment.completed', data);
 
       return {
         status: StatusCode.OK,

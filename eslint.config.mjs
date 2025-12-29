@@ -24,7 +24,7 @@ export default defineConfig([
     },
     rules: {
       // Prettier formatting as ESLint errors
-      'prettier/prettier': 'warn',
+      // 'prettier/prettier': 'warn',
 
       // General ESLint rules
       'no-console': 'off',

@@ -1,6 +1,5 @@
 import { ITransaction } from '../../models/transaction.modal';
 import { stripe } from '../../config/stripe';
-import { RabbitMQPublisher } from '../../events/publisher';
 import { randomUUID } from 'crypto';
 import { StripeCheckoutSessionRes } from '../../types/response';
 import { PaymentReq } from '../../types/request';
@@ -261,7 +260,7 @@ export class StripeService implements IStripeService {
         amount: Number(adminShare) + Number(driverShare),
       };
 
-      RabbitMQPublisher.publish('payment.completed', data);
+      // RabbitMQPublisher.publish('payment.completed', data);
 
       return {
         status: StatusCode.OK,

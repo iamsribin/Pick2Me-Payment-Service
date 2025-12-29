@@ -60,6 +60,18 @@ export class WalletTransaction {
   @Column({ type: 'jsonb', nullable: true })
   metadata?: any;
 
+  @Column({ type: 'bigint', transformer: BigIntTransformer, nullable: true })
+  balanceBefore?: bigint;
+
+  @Column({ type: 'bigint', transformer: BigIntTransformer, nullable: true })
+  balanceAfter?: bigint;
+
+  @Column({ type: 'bigint', transformer: BigIntTransformer, nullable: true })
+  reservedBefore?: bigint;
+
+  @Column({ type: 'bigint', transformer: BigIntTransformer, nullable: true })
+  reservedAfter?: bigint;
+
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt!: Date;
 }
