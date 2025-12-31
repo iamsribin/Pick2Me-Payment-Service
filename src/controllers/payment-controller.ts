@@ -15,8 +15,8 @@ export class PaymentController {
   constructor(
     @inject(TYPES.PaymentService) private _paymentService: IPaymentService,
     @inject(TYPES.StripeService) private _stripeService: IStripeService,
-    @inject(TYPES.UserWalletService) private _walletService: IUserWalletService,
-  ) { }
+    @inject(TYPES.UserWalletService) private _walletService: IUserWalletService
+  ) {}
 
   async CreateCheckoutSession(
     call: ServerUnaryCall<PaymentReq, any>,

@@ -68,7 +68,9 @@ const verifyGatewayJwtPlugin: FastifyPluginAsync = async (fastify) => {
       } catch (err: any) {
         const message = err?.message || 'Invalid gateway token';
         if (strict) {
-          reply.code(StatusCode.Unauthorized).send({ message: `Invalid gateway token: ${message}` });
+          reply
+            .code(StatusCode.Unauthorized)
+            .send({ message: `Invalid gateway token: ${message}` });
           return;
         }
         request.gatewayUser = null;

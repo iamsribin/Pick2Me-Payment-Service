@@ -12,7 +12,7 @@ import {
   markBookingAsPaid,
 } from '../../grpc/clients/booking-client';
 import { ConformCashPaymentDto } from '../../dto/paymentRes.dto';
-import {StatusCode } from '@Pick2Me/shared/interfaces';
+import { StatusCode } from '@Pick2Me/shared/interfaces';
 import { inject, injectable } from 'inversify';
 import { TYPES } from '@/types/inversify-types';
 import { ITransactionRepository } from '@/repositories/interfaces/repository';

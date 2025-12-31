@@ -39,7 +39,7 @@ export class DriverController {
     try {
       const driver = request.gatewayUser;
       const response = await this._driverService.refreshOnboardingLink(driver.id);
-      console.log('response',response);
+      console.log('response', response);
 
       return reply.status(200).send(response);
     } catch (error) {

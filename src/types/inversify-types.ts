@@ -2,7 +2,7 @@ export const TYPES = {
   PaymentController: Symbol.for('PaymentController'),
   GrpcPaymentController: Symbol.for('GrpcPaymentController'),
   DriverController: Symbol.for('DriverController'),
-  
+
   PaymentService: Symbol.for('PaymentService'),
   DriverWalletService: Symbol.for('DriverWalletService'),
   StripeService: Symbol.for('StripeService'),

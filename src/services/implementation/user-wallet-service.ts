@@ -8,7 +8,7 @@ import { Wallet } from '@/entity/wallet.entity';
 import { stripe } from '@/config/stripe';
 import { IDriverStripeRepository } from '@/repositories/interfaces/i-driver-strip-repository';
 import { convertCurrency, getAvailableBalanceForCurrency } from '@/utils/currency';
-import { EventProducer } from '@/events/publisher';
+import { AddEarningsRequest, EventProducer } from '@/events/publisher';
 import { PaymentReq } from '@/types/request';
 
 @injectable()
@@ -16,7 +16,7 @@ export class UserWalletService implements IUserWalletService {
   constructor(
     @inject(TYPES.WalletRepository) private _walletRepository: IWalletRepository,
     @inject(TYPES.DriverStripeRepository) private _driverStripRepo: IDriverStripeRepository
-  ) { }
+  ) {}
 
   createWalletForUser = async (data: {
     userId: string;
@@ -118,7 +118,7 @@ export class UserWalletService implements IUserWalletService {
       throw InternalError('Currency conversion failed');
     }
 
-    // platform fee 20% 
+    // platform fee 20%
     const platformFee = (transferAmountInMinor * 20n) / 100n;
     const driverShare = transferAmountInMinor - platformFee;
 
@@ -132,11 +132,16 @@ export class UserWalletService implements IUserWalletService {
         if (pendingTxId) {
           await compensateRunner.manager.update(WalletTransaction, { id: pendingTxId } as any, {
             status: 'failed',
-            metadata: { originalBookingId: bookingId, error: 'Insufficient platform funds in transfer currency' },
+            metadata: {
+              originalBookingId: bookingId,
+              error: 'Insufficient platform funds in transfer currency',
+            },
           });
         }
         if (walletId) {
-          const wallet = await compensateRunner.manager.findOne(Wallet, { where: { id: walletId } as any });
+          const wallet = await compensateRunner.manager.findOne(Wallet, {
+            where: { id: walletId } as any,
+          });
           if (wallet) {
             await compensateRunner.manager.update(Wallet, { id: wallet.id } as any, {
               reserved: (wallet.reserved as bigint) - amount,
@@ -175,7 +180,6 @@ export class UserWalletService implements IUserWalletService {
       );
 
       stripeTransferId = transfer.id;
-
     } catch (err) {
       const compensateRunner = this._walletRepository.createQueryRunner();
       await compensateRunner.connect();
@@ -188,7 +192,9 @@ export class UserWalletService implements IUserWalletService {
           });
         }
         if (walletId) {
-          const wallet = await compensateRunner.manager.findOne(Wallet, { where: { id: walletId } as any });
+          const wallet = await compensateRunner.manager.findOne(Wallet, {
+            where: { id: walletId } as any,
+          });
           if (wallet) {
             await compensateRunner.manager.update(Wallet, { id: wallet.id } as any, {
               reserved: (wallet.reserved as bigint) - amount,
@@ -199,11 +205,15 @@ export class UserWalletService implements IUserWalletService {
       } catch (compErr) {
         await compensateRunner.rollbackTransaction();
         console.error('compensation failed after stripe error', { compErr, originalErr: err });
-        throw InternalError('Payment failed and compensation could not be completed. Contact support.');
+        throw InternalError(
+          'Payment failed and compensation could not be completed. Contact support.'
+        );
       } finally {
         await compensateRunner.release();
       }
-      throw BadRequestError('Failed to transfer amount to driver. Please choose another payment method');
+      throw BadRequestError(
+        'Failed to transfer amount to driver. Please choose another payment method'
+      );
     }
 
     const settleRunner = this._walletRepository.createQueryRunner();
@@ -215,7 +225,9 @@ export class UserWalletService implements IUserWalletService {
       });
       if (!pending) throw new Error('TX_NOT_FOUND');
 
-      const wallet = await settleRunner.manager.findOne(Wallet, { where: { id: pending.walletId } as any });
+      const wallet = await settleRunner.manager.findOne(Wallet, {
+        where: { id: pending.walletId } as any,
+      });
       if (!wallet) throw new Error('WALLET_NOT_FOUND_ON_SETTLE');
 
       const newReserved = (wallet.reserved as bigint) - amount;
@@ -226,26 +238,38 @@ export class UserWalletService implements IUserWalletService {
         balance: newBalance,
       });
 
-      await settleRunner.manager.update(
-        WalletTransaction,
-        { id: pending.id } as any,
-        {
-          status: 'settled',
-          metadata: { ...(pending.metadata || {}), stripeTransferId },
-          balanceAfter: newBalance,
-          reservedAfter: newReserved,
-        }
-      );
+      await settleRunner.manager.update(WalletTransaction, { id: pending.id } as any, {
+        status: 'settled',
+        metadata: { ...(pending.metadata || {}), stripeTransferId },
+        balanceAfter: newBalance,
+        reservedAfter: newReserved,
+      });
 
       await settleRunner.commitTransaction();
-      // paymentData.amount = driverShare;
-      EventProducer.MarkPaymentCompleted(paymentData);
+      const eventPayload: AddEarningsRequest = {
+        driverId,
+        userId,
+        driverShare,
+        platformFee,
+        bookingId,
+        isAddCommission: false,
+        paymentStatus: 'Completed',
+        paymentMode: 'Wallet',
+      };
+      EventProducer.MarkPaymentCompleted(eventPayload);
 
       return;
     } catch (err) {
       await settleRunner.rollbackTransaction();
-      console.error('settle failed after successful stripe transfer', { err, bookingId, userId, stripeTransferId });
-      throw InternalError('Payment completed but finalization failed. Support will reconcile this payment.');
+      console.error('settle failed after successful stripe transfer', {
+        err,
+        bookingId,
+        userId,
+        stripeTransferId,
+      });
+      throw InternalError(
+        'Payment completed but finalization failed. Support will reconcile this payment.'
+      );
     } finally {
       await settleRunner.release();
     }

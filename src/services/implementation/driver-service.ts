@@ -9,7 +9,7 @@ import { IDriverStripeRepository } from '@/repositories/interfaces/i-driver-stri
 export default class DriverWalletService implements IDriverWalletService {
   constructor(
     @inject(TYPES.DriverStripeRepository) private _driverStripRepo: IDriverStripeRepository
-  ) { }
+  ) {}
 
   async createDriverConnectAccount(
     email: string,
@@ -207,7 +207,9 @@ export default class DriverWalletService implements IDriverWalletService {
       const transfersStatus = account.capabilities?.transfers;
 
       if (transfersStatus !== 'active') {
-        throw BadRequestError(`Driver cannot receive payouts yet. Transfer status: ${transfersStatus}. choose another payment option`);
+        throw BadRequestError(
+          `Driver cannot receive payouts yet. Transfer status: ${transfersStatus}. choose another payment option`
+        );
       }
 
       const amountCents = Math.round(amount);
@@ -216,7 +218,6 @@ export default class DriverWalletService implements IDriverWalletService {
       const driverShare = amountCents - platformFee;
 
       console.log({ platformFee, driverShare });
-
 
       const available = await this.getPlatformAvailableBalance(currency);
       if (available < driverShare) {
@@ -257,6 +258,4 @@ export default class DriverWalletService implements IDriverWalletService {
       throw InternalError('Failed to add funds to driver account');
     }
   }
-
-
 }

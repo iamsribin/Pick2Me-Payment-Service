@@ -11,5 +11,5 @@ export interface IDriverWalletService {
     driverId: string,
     amount: number,
     opts?: { currency?: string; description?: string }
-  ): Promise<{ success: boolean; transferId?: string; raw?: any }>
+  ): Promise<{ success: boolean; transferId?: string; raw?: any }>;
 }

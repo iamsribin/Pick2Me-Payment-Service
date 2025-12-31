@@ -1,37 +1,50 @@
-import { PaymentReq } from '@/types/request';
 import { EXCHANGES, RabbitMQ, ROUTING_KEYS } from '@Pick2Me/shared/messaging';
-import { AnyARecord } from 'node:dns';
 const url = process.env.RABBIT_URL!;
 
+export interface AddEarningsRequest {
+  driverId: string;
+  platformFee: bigint;
+  driverShare: bigint;
+  userId: string;
+  bookingId: string;
+  isAddCommission: boolean;
+  paymentStatus: 'Pending' | 'Failed' | 'Completed' | 'idle';
+  paymentMode: 'Cash' | 'Wallet' | 'Stripe';
+}
 export class EventProducer {
-    static async init() {
-        await RabbitMQ.connect({ url, serviceName: 'payment-service' });
-        await RabbitMQ.setupExchange(EXCHANGES.PAYMENT, 'topic');
-    }
+  static async init() {
+    await RabbitMQ.connect({ url, serviceName: 'payment-service' });
+    await RabbitMQ.setupExchange(EXCHANGES.PAYMENT, 'topic');
+  }
 
-    static async MarkPaymentCompleted(data: PaymentReq) {
-        this.init();
+  static async MarkBookingService(data: AddEarningsRequest) {
+    const markPaymentCompleted = {
+      data,
+      type: ROUTING_KEYS.MARK_PAYMENT_COMPLETED,
+    };
 
-        const updateDriverEarnings = {
-            data,
-            type: ROUTING_KEYS.UPDATE_DRIVER_EARNINGS,
-        };
+    await RabbitMQ.publish(
+      EXCHANGES.DRIVER,
+      ROUTING_KEYS.MARK_PAYMENT_COMPLETED,
+      markPaymentCompleted
+    );
+  }
 
-        await RabbitMQ.publish(
-            EXCHANGES.DRIVER,
-            ROUTING_KEYS.UPDATE_DRIVER_EARNINGS,
-            updateDriverEarnings
-        );
+  static async MarkPaymentCompleted(data: AddEarningsRequest) {
+    this.init();
 
-        const markPaymentCompleted = {
-            data,
-            type: ROUTING_KEYS.MARK_PAYMENT_COMPLETED,
-        };
+    this.MarkBookingService(data);
 
-        await RabbitMQ.publish(
-            EXCHANGES.DRIVER,
-            ROUTING_KEYS.MARK_PAYMENT_COMPLETED,
-            markPaymentCompleted
-        );
-    }
+    const updateDriverEarnings = {
+      data,
+      type: ROUTING_KEYS.UPDATE_DRIVER_EARNINGS,
+    };
+
+    await RabbitMQ.publish(
+      EXCHANGES.PAYMENT,
+      ROUTING_KEYS.UPDATE_DRIVER_EARNINGS,
+      updateDriverEarnings
+    );
+
+  }
 }
