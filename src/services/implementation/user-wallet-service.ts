@@ -2,7 +2,7 @@ import { IUserWalletService } from '../interface/i-user-waller-service';
 import { inject, injectable } from 'inversify';
 import { TYPES } from '@/types/inversify-types';
 import { IWalletRepository } from '@/repositories/interfaces/i-wallet-repository';
-import { BadRequestError, InternalError, NotFoundError } from '@Pick2Me/shared/errors';
+import { BadRequestError, InternalError, NotFoundError } from '@pick2me/shared/errors';
 import { WalletTransaction } from '@/entity/wallet-transaction.entity';
 import { Wallet } from '@/entity/wallet.entity';
 import { stripe } from '@/config/stripe';

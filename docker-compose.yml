@@ -1,0 +1,17 @@
+services:
+  user-service:
+    image: pick2me-payment-service:1.0
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: payment-service
+    env_file:
+      - .env
+    ports:
+      - "3004:3004"
+    networks:
+      - miro-backend
+
+networks:
+  miro-backend:
+    external: true

@@ -2,7 +2,7 @@ import { ConformCashPaymentDto } from '@/dto/paymentRes.dto';
 import { randomUUID } from 'crypto';
 import { IPaymentService } from '../interface/i-payment-service';
 import { addDriverEarnings, markBookingAsPaid } from '@/grpc/clients/booking-client';
-import { StatusCode } from '@Pick2Me/shared/interfaces';
+import { StatusCode } from '@pick2me/shared/interfaces';
 import { ITransactionRepository } from '@/repositories/interfaces/repository';
 import { inject, injectable } from 'node_modules/inversify/lib/cjs';
 import { TYPES } from '@/types/inversify-types';

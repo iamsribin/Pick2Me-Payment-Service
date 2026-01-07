@@ -1,5 +1,5 @@
 import 'fastify';
-import { AccessPayload, IRole } from '@Pick2Me/shared';
+import { AccessPayload, IRole } from '@pick2me/shared';
 
 declare module 'fastify' {
   interface FastifyInstance {

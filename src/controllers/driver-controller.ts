@@ -1,7 +1,7 @@
 import { IDriverWalletService } from '@/services/interface/i-driver-wallet-service';
 import { IStripeService } from '@/services/interface/i-stripe-service';
 import { TYPES } from '@/types/inversify-types';
-import { HttpError, InternalError } from '@Pick2Me/shared/errors';
+import { HttpError, InternalError } from '@pick2me/shared/errors';
 import { inject, injectable } from 'inversify';
 
 @injectable()

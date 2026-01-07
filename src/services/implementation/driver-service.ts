@@ -1,7 +1,7 @@
 import { stripe } from '@/config/stripe';
 import { IDriverWalletService } from '../interface/i-driver-wallet-service';
 import { inject, injectable } from 'inversify';
-import { BadRequestError, HttpError, InternalError, NotFoundError } from '@Pick2Me/shared/errors';
+import { BadRequestError, HttpError, InternalError, NotFoundError } from '@pick2me/shared/errors';
 import { TYPES } from '@/types/inversify-types';
 import { IDriverStripeRepository } from '@/repositories/interfaces/i-driver-strip-repository';
 

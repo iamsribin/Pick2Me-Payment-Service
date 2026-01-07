@@ -4,7 +4,7 @@ import app from './app';
 import { connectSQL } from './config/sql-db';
 import { startGrpcServer } from './grpc/server';
 import { isEnvDefined } from './utils/envChecker';
-// import { connectDB } from '@Pick2Me/shared/mongo';
+// import { connectDB } from '@pick2me/shared/mongo';
 import { UserEventConsumer } from './events/consumer';
 
 const startServer = async () => {

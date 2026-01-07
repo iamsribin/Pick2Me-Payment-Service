@@ -12,11 +12,11 @@ import {
   markBookingAsPaid,
 } from '../../grpc/clients/booking-client';
 import { ConformCashPaymentDto } from '../../dto/paymentRes.dto';
-import { StatusCode } from '@Pick2Me/shared/interfaces';
+import { StatusCode } from '@pick2me/shared/interfaces';
 import { inject, injectable } from 'inversify';
 import { TYPES } from '@/types/inversify-types';
 import { ITransactionRepository } from '@/repositories/interfaces/repository';
-import { getRedisService } from '@Pick2Me/shared/redis';
+import { getRedisService } from '@pick2me/shared/redis';
 
 @injectable()
 export class StripeService implements IStripeService {

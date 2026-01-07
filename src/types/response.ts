@@ -1,4 +1,4 @@
-import { StatusCode } from '@Pick2Me/shared';
+import { StatusCode } from '@pick2me/shared';
 
 export interface StripeCheckoutSessionRes {
   status: StatusCode;

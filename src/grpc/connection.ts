@@ -1,4 +1,4 @@
-import { bookingProto, driverProto } from '@Pick2Me/shared/protos';
+import { bookingProto, driverProto } from '@pick2me/shared/protos';
 import * as grpc from '@grpc/grpc-js';
 
 const driverClient = new (driverProto as any).DriverService(

@@ -1,7 +1,7 @@
 import { Repository, QueryRunner } from 'typeorm';
 import { Wallet } from '@/entity/wallet.entity';
 import { WalletTransaction } from '@/entity/wallet-transaction.entity';
-import { SqlBaseRepository } from '@Pick2Me/shared/sql';
+import { SqlBaseRepository } from '@pick2me/shared/sql';
 import { AppDataSource } from '@/config/sql-db';
 import { IWalletRepository } from '../interfaces/i-wallet-repository';
 import { inject, injectable } from 'inversify';

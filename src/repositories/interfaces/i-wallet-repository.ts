@@ -1,5 +1,5 @@
 import { Wallet } from '@/entity/wallet.entity';
-import { ISqlBaseRepository } from '@Pick2Me/shared/sql';
+import { ISqlBaseRepository } from '@pick2me/shared/sql';
 import { QueryRunner } from 'typeorm';
 
 export interface IWalletRepository extends ISqlBaseRepository<Wallet> {
