@@ -14,7 +14,7 @@ import { UserWalletService } from '@/services/implementation/user-wallet-service
 import { IWalletRepository } from '@/repositories/interfaces/i-wallet-repository';
 import { WalletRepository } from '@/repositories/implementation/wallet.repository';
 import { ITransactionRepository } from '@/repositories/interfaces/repository';
-import TransactionRepositoryImpl from '@/repositories/implementation/transaction.repository';
+// import TransactionRepositoryImpl from '@/repositories/implementation/transaction.repository';
 import { AppDataSource, AppStripeDataSource } from './sql-db';
 import { Wallet } from '@/entity/wallet.entity';
 import { Repository } from 'typeorm';
@@ -34,7 +34,7 @@ container.bind<IPaymentService>(TYPES.PaymentService).to(PaymentService);
 container.bind<IStripeService>(TYPES.StripeService).to(StripeService);
 container.bind<IUserWalletService>(TYPES.UserWalletService).to(UserWalletService);
 
-container.bind<ITransactionRepository>(TYPES.TransactionRepository).to(TransactionRepositoryImpl);
+// container.bind<ITransactionRepository>(TYPES.TransactionRepository).to(TransactionRepositoryImpl);
 container.bind<IWalletRepository>(TYPES.WalletRepository).to(WalletRepository);
 container
   .bind<Repository<Wallet>>(TYPES.WalletRepositoryToken)

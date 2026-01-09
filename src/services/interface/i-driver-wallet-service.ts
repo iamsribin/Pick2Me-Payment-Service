@@ -4,9 +4,9 @@ export interface IDriverWalletService {
     driverId: string
   ): Promise<{ accountId: string; accountLinkUrl: string }>;
   checkDriverOnboardingStatus(driverId: string): Promise<{ onboardingStatus: boolean }>;
-  stripeOnboardingView(driverId: string);
-  getDriverWalletDetails(driverId: string);
-  refreshOnboardingLink(driverId: string);
+  stripeOnboardingView(driverId: string): Promise<any>;
+  getDriverWalletDetails(driverId: string): Promise<any>;
+  refreshOnboardingLink(driverId: string): Promise<any>;
   addFundsToDriverAccount(
     driverId: string,
     amount: number,

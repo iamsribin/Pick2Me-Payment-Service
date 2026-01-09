@@ -19,6 +19,8 @@ export class UserEventConsumer {
     ]);
 
     await RabbitMQ.consume(QUEUES.PAYMENT_QUEUE, async (msg) => {
+      console.log('comsume:', msg);
+
       switch (msg.type) {
         case ROUTING_KEYS.USER_WALLET_CREATE:
           await userWalletService.createWalletForUser(msg.data);

@@ -1,5 +1,5 @@
 import { IDriverWalletService } from '@/services/interface/i-driver-wallet-service';
-import { IStripeService } from '@/services/interface/i-stripe-service';
+import { FastifyRequest, FastifyReply } from 'fastify';
 import { TYPES } from '@/types/inversify-types';
 import { HttpError, InternalError } from '@pick2me/shared/errors';
 import { inject, injectable } from 'inversify';
@@ -8,7 +8,7 @@ import { inject, injectable } from 'inversify';
 export class DriverController {
   constructor(@inject(TYPES.DriverWalletService) private _driverService: IDriverWalletService) {}
 
-  async getOnboardView(request, reply) {
+  async getOnboardView(request: FastifyRequest, reply: FastifyReply) {
     try {
       const driver = request.gatewayUser;
       const response = await this._driverService.stripeOnboardingView(driver.id);
@@ -21,7 +21,7 @@ export class DriverController {
     }
   }
 
-  async getWalletDetails(request, reply) {
+  async getWalletDetails(request: FastifyRequest, reply: FastifyReply) {
     try {
       const driver = request.gatewayUser;
       const walletData = await this._driverService.getDriverWalletDetails(driver.id);
@@ -35,7 +35,7 @@ export class DriverController {
     }
   }
 
-  async refreshOnboardingLink(request, reply) {
+  async refreshOnboardingLink(request: FastifyRequest, reply: FastifyReply) {
     try {
       const driver = request.gatewayUser;
       const response = await this._driverService.refreshOnboardingLink(driver.id);

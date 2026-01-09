@@ -18,13 +18,13 @@ export class DriverStripe {
   email!: string;
 
   @Column({ type: 'text' })
-  account_id: string;
+  account_id!: string;
 
   @Column({ type: 'text' })
-  accountLink: string;
+  accountLink!: string;
 
   @Column({ type: 'text', default: 'onboard' })
-  status: 'active' | 'onboard';
+  status!: 'active' | 'onboard';
 
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt!: Date;

@@ -38,7 +38,7 @@ export class WalletRepository extends SqlBaseRepository<Wallet> implements IWall
     return { balance: wallet.balance, transactions: transactionsCount };
   }
 
-  addRewardAmountToUserWallet(userId: string, amount: number) {
+  async addRewardAmountToUserWallet(userId: string, amount: number): Promise<any> {
     this.applyTransaction({
       userId,
       amount: BigInt(amount),

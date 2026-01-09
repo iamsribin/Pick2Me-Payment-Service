@@ -1,5 +1,5 @@
 services:
-  user-service:
+  payment-service:
     image: pick2me-payment-service:1.0
     build:
       context: .
@@ -9,6 +9,7 @@ services:
       - .env
     ports:
       - "3004:3004"
+    restart: unless-stopped
     networks:
       - miro-backend
 

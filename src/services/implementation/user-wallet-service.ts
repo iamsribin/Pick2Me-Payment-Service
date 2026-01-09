@@ -135,7 +135,7 @@ export class UserWalletService implements IUserWalletService {
             metadata: {
               originalBookingId: bookingId,
               error: 'Insufficient platform funds in transfer currency',
-            },
+            } as any,
           });
         }
         if (walletId) {
@@ -188,7 +188,10 @@ export class UserWalletService implements IUserWalletService {
         if (pendingTxId) {
           await compensateRunner.manager.update(WalletTransaction, { id: pendingTxId } as any, {
             status: 'failed',
-            metadata: { originalBookingId: bookingId, error: (err as any)?.message || String(err) },
+            metadata: {
+              originalBookingId: bookingId,
+              error: (err as any)?.message || String(err),
+            } as any,
           });
         }
         if (walletId) {

@@ -240,7 +240,7 @@ export default class DriverWalletService implements IDriverWalletService {
       });
 
       return { success: true, transferId: transfer.id, raw: transfer };
-    } catch (err) {
+    } catch (err: any) {
       console.log('addFundsToDriverAccount error', {
         message: err?.message,
         code: (err as any)?.raw?.code || (err as any).code,

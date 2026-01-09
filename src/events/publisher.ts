@@ -45,6 +45,5 @@ export class EventProducer {
       ROUTING_KEYS.UPDATE_DRIVER_EARNINGS,
       updateDriverEarnings
     );
-
   }
 }

@@ -3,7 +3,7 @@ import { ISqlBaseRepository } from '@pick2me/shared/sql';
 import { QueryRunner } from 'typeorm';
 
 export interface IWalletRepository extends ISqlBaseRepository<Wallet> {
-  createIfNotExists(userId: string, currency?: string);
+  createIfNotExists(userId: string, currency?: string): Promise<any>;
   getUserWalletBalanceAndTransactions(
     userId: string,
     currency: string
@@ -22,7 +22,7 @@ export interface IWalletRepository extends ISqlBaseRepository<Wallet> {
     idempotencyKey?: string;
     traceId?: string;
     metadata?: any;
-  });
+  }): Promise<any>;
 
   applyTransaction(params: {
     userId: string;
@@ -35,7 +35,7 @@ export interface IWalletRepository extends ISqlBaseRepository<Wallet> {
     idempotencyKey?: string;
     traceId?: string;
     metadata?: any;
-  });
-  addRewardAmountToUserWallet(userId: string, amount: number);
-  createQueryRunner();
+  }): Promise<any>;
+  addRewardAmountToUserWallet(userId: string, amount: number): Promise<any>;
+  createQueryRunner(): QueryRunner;
 }

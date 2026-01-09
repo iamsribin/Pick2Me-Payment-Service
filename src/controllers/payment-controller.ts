@@ -9,6 +9,7 @@ import { inject, injectable } from 'inversify';
 import { TYPES } from '@/types/inversify-types';
 import { IResponse } from '@pick2me/shared/interfaces';
 import { IUserWalletService } from '@/services/interface/i-user-waller-service';
+import { FastifyReply, FastifyRequest } from 'fastify';
 
 @injectable()
 export class PaymentController {
@@ -25,8 +26,8 @@ export class PaymentController {
     try {
       const result = await this._stripeService.createCheckoutSession(call.request);
       callback(null, result);
-    } catch (error) {
-      InternalError(error, callback);
+    } catch (error: any) {
+      InternalError(error);
     }
   }
 
@@ -62,18 +63,18 @@ export class PaymentController {
       const result = await this._paymentService.ConfirmCashPayment(call.request);
 
       callback(null, result);
-    } catch (error) {
+    } catch (error: any) {
       InternalError(error, callback);
     }
   }
 
-  walletPayment = async (request, reply) => {
+  walletPayment = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const user = request.gatewayUser;
-      const paymentData = request.body;
+      const paymentData = request.body as PaymentReq;
       const response = await this._walletService.transferAmountToDriverStripe(user.id, paymentData);
       return reply.status(200).send(response);
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
       if (error instanceof HttpError) throw error;
       throw InternalError('something went wrong');
