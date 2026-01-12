@@ -1,5 +1,5 @@
 import { IncomingHttpHeaders } from 'http';
-import { ConformCashPaymentDto } from '../../dto/paymentRes.dto';
+import { ConfirmCashPaymentDto } from '../../dto/paymentRes.dto';
 import { PaymentReq } from '../../types/request';
 import { StripeCheckoutSessionRes } from '../../types/response';
 
@@ -9,5 +9,5 @@ export interface IPaymentService {
     userId: string;
     driverId: string;
     amount: number;
-  }): Promise<ConformCashPaymentDto>;
+  }): Promise<ConfirmCashPaymentDto>;
 }

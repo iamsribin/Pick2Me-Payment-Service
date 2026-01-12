@@ -13,7 +13,7 @@ import { IUserWalletService } from '@/services/interface/i-user-waller-service';
 import { UserWalletService } from '@/services/implementation/user-wallet-service';
 import { IWalletRepository } from '@/repositories/interfaces/i-wallet-repository';
 import { WalletRepository } from '@/repositories/implementation/wallet.repository';
-import { ITransactionRepository } from '@/repositories/interfaces/repository';
+// import { ITransactionRepository } from '@/repositories/interfaces/repository';
 // import TransactionRepositoryImpl from '@/repositories/implementation/transaction.repository';
 import { AppDataSource, AppStripeDataSource } from './sql-db';
 import { Wallet } from '@/entity/wallet.entity';

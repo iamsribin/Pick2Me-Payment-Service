@@ -1,38 +1,54 @@
+import { StatusCode } from '@pick2me/shared/interfaces';
 import { bookingClient, driverClient } from '../connection';
 
-export async function markBookingAsPaid(bookingId: string, paymentId: string) {
+export interface PaymentData {
+  driverId: string;
+  platformFee: number;
+  driverShare: number;
+  userId: string;
+  bookingId: string;
+  isAddCommission: boolean;
+  paymentStatus: 'Pending' | 'Failed' | 'Completed' | 'idle';
+  paymentMode: 'Cash' | 'Wallet' | 'Stripe';
+}
+
+export async function markBookingAsPaid(paymentData: PaymentData) {
+  console.log('called booking service',paymentData);
+
   return new Promise<any>((resolve, reject) => {
-    bookingClient.MarkAsPaid({ bookingId, paymentId }, (err: Error | null, response: any) => {
+    bookingClient.UpdatePaymentStatus(paymentData, (err: Error | null, response: any) => {
+      console.log('response',response);
+      
       if (err) return reject(err);
-      if (response.status !== 'success') return reject(new Error('Failed to update booking'));
+      if (response.status !== StatusCode.OK) return reject(new Error('Failed to update booking'));
       resolve(response);
     });
   });
 }
 
-export async function rollbackBooking(bookingId: string) {
+export async function rollbackBooking(paymentData: PaymentData) {
+  console.log('called rollbackBooking');
+
   return new Promise<void>((resolve, reject) => {
-    bookingClient.RollbackPayment({ bookingId }, (err: Error | null) => {
+    bookingClient.UpdatePaymentStatus(paymentData, (err: Error | null) => {
       if (err) return reject(err);
       resolve();
     });
   });
 }
 
-export async function addDriverEarnings(
-  driverId: string,
-  adminShare: number,
-  driverShare: number,
-  transactionId: string,
-  bookingId: string
-) {
+export async function addDriverEarnings(paymentData: PaymentData) {
+  console.log('called addDriverEarnings',paymentData);
   return new Promise<any>((resolve, reject) => {
     driverClient.AddEarnings(
-      { driverId, adminShare, driverShare, transactionId },
+      paymentData,
       async (err: Error | null, response: any) => {
+        console.log('res',response);
+        
         if (err) return reject(err);
-        if (response.status !== 'success') {
-          await rollbackBooking(bookingId);
+        if (response.status !== StatusCode.OK) {
+          paymentData.paymentStatus = 'Failed';
+          await rollbackBooking(paymentData);
           return reject(new Error('Failed to update driver'));
         }
         resolve(response);

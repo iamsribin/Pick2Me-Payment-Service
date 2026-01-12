@@ -1,11 +1,12 @@
 import 'dotenv/config';
-
 import app from './app';
 import { connectSQL } from './config/sql-db';
 import { startGrpcServer } from './grpc/server';
 import { isEnvDefined } from './utils/envChecker';
 // import { connectDB } from '@pick2me/shared/mongo';
 import { UserEventConsumer } from './events/consumer';
+import { createRedisService } from '@pick2me/shared/redis';
+
 
 const startServer = async () => {
   try {
@@ -14,6 +15,8 @@ const startServer = async () => {
     // connectDB(process.env.MONGO_URL!);
     await connectSQL();
 
+    createRedisService(process.env.REDIS_URL!);
+    
     await UserEventConsumer.init();
 
     startGrpcServer();

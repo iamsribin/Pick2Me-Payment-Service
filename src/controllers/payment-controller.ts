@@ -1,5 +1,5 @@
 import { sendUnaryData, ServerUnaryCall } from '@grpc/grpc-js';
-import { ConformCashPaymentDto } from '../dto/paymentRes.dto';
+import { ConfirmCashPaymentDto } from '../dto/paymentRes.dto';
 import { IPaymentService } from '../services/interface/i-payment-service';
 import { PaymentReq } from '../types/request';
 import { IncomingHttpHeaders } from 'http';
@@ -17,19 +17,7 @@ export class PaymentController {
     @inject(TYPES.PaymentService) private _paymentService: IPaymentService,
     @inject(TYPES.StripeService) private _stripeService: IStripeService,
     @inject(TYPES.UserWalletService) private _walletService: IUserWalletService
-  ) {}
-
-  async CreateCheckoutSession(
-    call: ServerUnaryCall<PaymentReq, any>,
-    callback: (error: Error | null, response: any) => void
-  ) {
-    try {
-      const result = await this._stripeService.createCheckoutSession(call.request);
-      callback(null, result);
-    } catch (error: any) {
-      InternalError(error);
-    }
-  }
+  ) { }
 
   async handleStripeWebhook(rawBody: Buffer, headers: IncomingHttpHeaders): Promise<void> {
     if (!rawBody || !headers) {
@@ -46,27 +34,51 @@ export class PaymentController {
     }
   }
 
-  async ConformCashPayment(
-    call: ServerUnaryCall<
-      {
-        bookingId: string;
-        userId: string;
-        driverId: string;
-        amount: number;
-        idempotencyKey: string;
-      },
-      any
-    >,
-    callback: sendUnaryData<IResponse<ConformCashPaymentDto>>
-  ) {
+  cashInHandPayment = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
-      const result = await this._paymentService.ConfirmCashPayment(call.request);
-
-      callback(null, result);
-    } catch (error: any) {
-      InternalError(error, callback);
+      const paymentData = request.body as PaymentReq;
+      const response = await this._paymentService.ConfirmCashPayment(paymentData);
+      return reply.status(200).send(response);
+    } catch (error) {
+      console.log('errorop=', error);
+      if (error instanceof HttpError) throw error;
+      throw InternalError('something went wrong');
     }
-  }
+  };
+
+  //   async CreateCheckoutSession(
+  //   call: ServerUnaryCall<PaymentReq, any>,
+  //   callback: (error: Error | null, response: any) => void
+  // ) {
+  //   try {
+  //     const result = await this._stripeService.createCheckoutSession(call.request);
+  //     callback(null, result);
+  //   } catch (error: any) {
+  //     InternalError(error);
+  //   }
+  // }
+
+  // async ConformCashPayment(
+  //   call: ServerUnaryCall<
+  //     {
+  //       bookingId: string;
+  //       userId: string;
+  //       driverId: string;
+  //       amount: number;
+  //       idempotencyKey: string;
+  //     },
+  //     any
+  //   >,
+  //   callback: sendUnaryData<IResponse<ConformCashPaymentDto>>
+  // ) {
+  //   try {
+  //     const result = await this._paymentService.ConfirmCashPayment(call.request);
+
+  //     callback(null, result);
+  //   } catch (error: any) {
+  //     InternalError(error, callback);
+  //   }
+  // }
 
   walletPayment = async (request: FastifyRequest, reply: FastifyReply) => {
     try {

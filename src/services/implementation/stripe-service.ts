@@ -11,11 +11,11 @@ import {
   getDriverStripeFromDriverService,
   markBookingAsPaid,
 } from '../../grpc/clients/booking-client';
-import { ConformCashPaymentDto } from '../../dto/paymentRes.dto';
+import { ConfirmCashPaymentDto } from '../../dto/paymentRes.dto';
 import { StatusCode } from '@pick2me/shared/interfaces';
 import { inject, injectable } from 'inversify';
 import { TYPES } from '@/types/inversify-types';
-import { ITransactionRepository } from '@/repositories/interfaces/repository';
+// import { ITransactionRepository } from '@/repositories/interfaces/repository';
 import { getRedisService } from '@pick2me/shared/redis';
 
 @injectable()
@@ -36,8 +36,8 @@ export class StripeService implements IStripeService {
   async handleStripeWebhook(
     rawBody: Buffer,
     headers: IncomingHttpHeaders
-  ): Promise<ConformCashPaymentDto> {
-    const kjs: ConformCashPaymentDto = {
+  ): Promise<ConfirmCashPaymentDto> {
+    const kjs: ConfirmCashPaymentDto = {
       message: 'klkj',
       status: 200,
     };

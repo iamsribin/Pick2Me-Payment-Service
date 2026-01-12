@@ -1,6 +1,6 @@
 import { StatusCode } from '@pick2me/shared/interfaces';
 
-export interface ConformCashPaymentDto {
+export interface ConfirmCashPaymentDto {
   status: StatusCode;
   message: string;
 }
