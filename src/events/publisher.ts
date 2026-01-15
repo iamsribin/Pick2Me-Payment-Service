@@ -46,4 +46,19 @@ export class EventProducer {
       updateDriverEarnings
     );
   }
+
+    static async NotifyPaymentCompleted(userId: string) {
+    this.init();
+
+    const notificationPayload = {
+      data:userId,
+      type: ROUTING_KEYS.NOTIFY_PAYMENT_COMPLETED,
+    };
+
+    await RabbitMQ.publish(
+      EXCHANGES.PAYMENT,
+      ROUTING_KEYS.NOTIFY_PAYMENT_COMPLETED,
+      notificationPayload
+    );
+  }
 }

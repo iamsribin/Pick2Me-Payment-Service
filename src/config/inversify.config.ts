@@ -13,8 +13,8 @@ import { IUserWalletService } from '@/services/interface/i-user-waller-service';
 import { UserWalletService } from '@/services/implementation/user-wallet-service';
 import { IWalletRepository } from '@/repositories/interfaces/i-wallet-repository';
 import { WalletRepository } from '@/repositories/implementation/wallet.repository';
-// import { ITransactionRepository } from '@/repositories/interfaces/repository';
-// import TransactionRepositoryImpl from '@/repositories/implementation/transaction.repository';
+import { ITransaction } from '@/repositories/interfaces/i-transaction-repository';
+import {TransactionRepository} from '@/repositories/implementation/transaction.repository';
 import { AppDataSource, AppStripeDataSource } from './sql-db';
 import { Wallet } from '@/entity/wallet.entity';
 import { Repository } from 'typeorm';
@@ -22,6 +22,7 @@ import { DriverStripeRepository } from '@/repositories/implementation/driver-str
 import { IDriverStripeRepository } from '@/repositories/interfaces/i-driver-strip-repository';
 import { DriverStripe } from '@/entity/driver-sripe.entity';
 import { DriverController } from '@/controllers/driver-controller';
+import { Transaction } from '@/entity/transaction.entity';
 
 const container = new Container();
 
@@ -34,8 +35,14 @@ container.bind<IPaymentService>(TYPES.PaymentService).to(PaymentService);
 container.bind<IStripeService>(TYPES.StripeService).to(StripeService);
 container.bind<IUserWalletService>(TYPES.UserWalletService).to(UserWalletService);
 
-// container.bind<ITransactionRepository>(TYPES.TransactionRepository).to(TransactionRepositoryImpl);
 container.bind<IWalletRepository>(TYPES.WalletRepository).to(WalletRepository);
+container.bind<ITransaction>(TYPES.TransactionRepository).to(TransactionRepository) .inSingletonScope();
+container
+  .bind<IDriverStripeRepository>(TYPES.DriverStripeRepository)
+  .to(DriverStripeRepository)
+  .inSingletonScope();
+
+
 container
   .bind<Repository<Wallet>>(TYPES.WalletRepositoryToken)
   .toConstantValue(AppDataSource.getRepository(Wallet));
@@ -44,10 +51,8 @@ container
   .bind<Repository<DriverStripe>>(TYPES.DriverStripeRepositoryToken)
   .toConstantValue(AppStripeDataSource.getRepository(DriverStripe));
 
-// bind implementation once
 container
-  .bind<IDriverStripeRepository>(TYPES.DriverStripeRepository)
-  .to(DriverStripeRepository)
-  .inSingletonScope();
+  .bind<Repository<Transaction>>(TYPES.TransactionRepositoryToken)
+  .toConstantValue(AppStripeDataSource.getRepository(Transaction));
 
 export { container };

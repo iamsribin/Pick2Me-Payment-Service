@@ -1,20 +1,12 @@
-import Fastify, { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import { container } from '@/config/inversify.config';
+import { PaymentController } from '@/controllers/payment-controller';
+import { TYPES } from '@/types/inversify-types';
+import Fastify, { FastifyInstance, FastifyRequest, FastifyReply, FastifyPluginAsync } from 'fastify';
 
-const fastify: FastifyInstance = Fastify();
+const paymentController = container.get<PaymentController>(TYPES.PaymentController);
 
-// Example route registration
-fastify.register(async (instance: FastifyInstance) => {
-  instance.addHook(
-    'preHandler',
-    instance.verifyGatewayJwt(true, process.env.GATEWAY_SHARED_SECRET!)
-  );
+const userRoutes: FastifyPluginAsync = async (fastify) => {
+  fastify.post('/create-checkout-session', paymentController.createCheckoutSession);
+};
 
-  instance.get('/protected', async (request: FastifyRequest, reply: FastifyReply) => {
-    // ✅ fully typed
-    return { user: request.gatewayUser };
-  });
-});
-
-export default fastify;
-
-export function StripeWebhook() {}
+export default userRoutes;

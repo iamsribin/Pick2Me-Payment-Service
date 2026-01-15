@@ -5,7 +5,7 @@ import { FastifyPluginAsync } from 'fastify';
 
 const paymentController = container.get<PaymentController>(TYPES.PaymentController);
 
-const walletRoutes: FastifyPluginAsync = async (fastify) => {
+const userRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.addHook('preHandler', fastify.verifyGatewayJwt(true, process.env.GATEWAY_SHARED_SECRET!));
 
   fastify.post('/wallet/payment', paymentController.walletPayment);
@@ -16,4 +16,4 @@ const walletRoutes: FastifyPluginAsync = async (fastify) => {
   });
 };
 
-export default walletRoutes;
+export default userRoutes;

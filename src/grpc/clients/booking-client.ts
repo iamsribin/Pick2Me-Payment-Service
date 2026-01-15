@@ -57,14 +57,14 @@ export async function addDriverEarnings(paymentData: PaymentData) {
   });
 }
 
-export async function getDriverStripeFromDriverService(driverId: string) {
-  return new Promise<any>((resolve, reject) => {
-    driverClient.getDriverStripe({ driverId }, async (err: Error | null, response: any) => {
-      if (err) return reject(err);
-      if (response.status !== 'success') {
-        return reject(new Error('Failed to update driver'));
-      }
-      resolve(response);
-    });
-  });
-}
+// export async function getDriverStripeFromDriverService(driverId: string) {
+//   return new Promise<any>((resolve, reject) => {
+//     driverClient.getDriverStripe({ driverId }, async (err: Error | null, response: any) => {
+//       if (err) return reject(err);
+//       if (response.status !== 'success') {
+//         return reject(new Error('Failed to update driver'));
+//       }
+//       resolve(response);
+//     });
+//   });
+// }

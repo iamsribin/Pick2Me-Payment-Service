@@ -4,9 +4,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    volumes:
-     - ../Pick2Me-Shared/dist:/app/node_modules/@pick2me/shared/dist
-     - ../Pick2Me-Shared/package.json:/app/node_modules/@pick2me/shared/package.json
     container_name: payment-service
     env_file:
       - .env

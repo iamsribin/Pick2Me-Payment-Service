@@ -5,7 +5,7 @@ import { ConfirmCashPaymentDto } from '../../dto/paymentRes.dto';
 
 export interface IStripeService {
   createCheckoutSession(data: PaymentReq): Promise<StripeCheckoutSessionRes>;
-  handleStripeWebhook(
+    handleStripeWebhook(
     rawBody: Buffer,
     headers: IncomingHttpHeaders
   ): Promise<ConfirmCashPaymentDto>;

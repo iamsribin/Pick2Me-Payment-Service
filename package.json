@@ -35,7 +35,7 @@
     },
     "dependencies": {
         "@grpc/grpc-js": "^1.13.4",
-        "@pick2me/shared": "^1.0.4",
+        "@pick2me/shared": "^1.0.5",
         "@types/amqplib": "^0.10.7",
         "amqplib": "^0.10.8",
         "cookie-parser": "^1.4.7",

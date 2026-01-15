@@ -1,5 +1,3 @@
-import { sendUnaryData, ServerUnaryCall } from '@grpc/grpc-js';
-import { ConfirmCashPaymentDto } from '../dto/paymentRes.dto';
 import { IPaymentService } from '../services/interface/i-payment-service';
 import { PaymentReq } from '../types/request';
 import { IncomingHttpHeaders } from 'http';
@@ -7,7 +5,7 @@ import { IStripeService } from '../services/interface/i-stripe-service';
 import { HttpError, InternalError } from '@pick2me/shared/errors';
 import { inject, injectable } from 'inversify';
 import { TYPES } from '@/types/inversify-types';
-import { IResponse } from '@pick2me/shared/interfaces';
+import { StatusCode } from '@pick2me/shared/interfaces';
 import { IUserWalletService } from '@/services/interface/i-user-waller-service';
 import { FastifyReply, FastifyRequest } from 'fastify';
 
@@ -19,20 +17,21 @@ export class PaymentController {
     @inject(TYPES.UserWalletService) private _walletService: IUserWalletService
   ) { }
 
-  async handleStripeWebhook(rawBody: Buffer, headers: IncomingHttpHeaders): Promise<void> {
-    if (!rawBody || !headers) {
-      throw new Error('Missing webhook payload or headers');
+  handleStripeWebhook = async (
+    request: FastifyRequest,
+    reply: FastifyReply
+  ): Promise<void> => {
+    const rawBody = request.body as Buffer;
+    const headers = request.headers;
+
+    if (!rawBody || !Buffer.isBuffer(rawBody)) {
+      throw new Error('Missing raw body');
     }
 
-    try {
-      await this._stripeService.handleStripeWebhook(rawBody, headers);
-    } catch (err: any) {
-      console.error('PaymentController.handleStripeWebhook error', {
-        error: err?.message ?? err,
-      });
-      throw err;
-    }
-  }
+    await this._stripeService.handleStripeWebhook(rawBody, headers);
+
+    reply.code(200).send({ received: true });
+  };
 
   cashInHandPayment = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
@@ -46,17 +45,18 @@ export class PaymentController {
     }
   };
 
-  //   async CreateCheckoutSession(
-  //   call: ServerUnaryCall<PaymentReq, any>,
-  //   callback: (error: Error | null, response: any) => void
-  // ) {
-  //   try {
-  //     const result = await this._stripeService.createCheckoutSession(call.request);
-  //     callback(null, result);
-  //   } catch (error: any) {
-  //     InternalError(error);
-  //   }
-  // }
+  createCheckoutSession = async (request: FastifyRequest, reply: FastifyReply) => {
+    try {
+      const paymentData = request.body as PaymentReq;
+      const result = await this._stripeService.createCheckoutSession(paymentData);
+      return reply.status(StatusCode.OK).send(result);
+    } catch (error: any) {
+      console.log("error", error);
+
+      if (error instanceof HttpError) throw error;
+      throw InternalError('something went wrong');
+    }
+  };
 
   // async ConformCashPayment(
   //   call: ServerUnaryCall<

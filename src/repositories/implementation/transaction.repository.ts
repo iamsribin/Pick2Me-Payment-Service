@@ -1,47 +1,13 @@
-// import { ITransaction } from '@/models/transaction.modal';
-// import { TransactionModel } from '@/models/transaction.modal';
-// import { ITransactionRepository } from '../interfaces/repository';
+import { AppTransactionDataSource } from '@/config/sql-db';
+import { Transaction } from '@/entity/transaction.entity';
+import { TYPES } from '@/types/inversify-types';
+import { SqlBaseRepository } from '@pick2me/shared/sql';
+import { inject, injectable } from 'inversify';
+import { Repository } from 'typeorm';
 
-// export default class TransactionRepositoryImpl implements ITransactionRepository {
-//   async create(transaction: Partial<ITransaction>): Promise<ITransaction> {
-//     return await TransactionModel.create(transaction);
-//   }
-
-//   async findByTransactionId(transactionId: string): Promise<ITransaction | null> {
-//     return await TransactionModel.findOne({ transactionId });
-//   }
-
-//   async findByIdempotencyKey(idempotencyKey: string): Promise<ITransaction | null> {
-//     return await TransactionModel.findOne({ idempotencyKey });
-//   }
-
-//   async update(transactionId: string, update: Partial<ITransaction>): Promise<ITransaction | null> {
-//     return await TransactionModel.findOneAndUpdate({ transactionId }, update, {
-//       new: true,
-//     });
-//   }
-
-//   // --- New method 1 ---
-//   async updateStatus(
-//     transactionId: string,
-//     status: 'pending' | 'completed' | 'failed'
-//   ): Promise<ITransaction | null> {
-//     return await TransactionModel.findOneAndUpdate(
-//       { transactionId },
-//       { status, updatedAt: new Date() },
-//       { new: true }
-//     );
-//   }
-
-//   // --- New method 2 ---
-//   async updateStatusByKey(
-//     idempotencyKey: string,
-//     status: 'pending' | 'completed' | 'failed'
-//   ): Promise<ITransaction | null> {
-//     return await TransactionModel.findOneAndUpdate(
-//       { idempotencyKey },
-//       { status, updatedAt: new Date() },
-//       { new: true }
-//     );
-//   }
-// }
+@injectable()
+export class TransactionRepository extends SqlBaseRepository<Transaction> {
+  constructor(@inject(TYPES.TransactionRepositoryToken) repo: Repository<Transaction>) {
+    super(Transaction, AppTransactionDataSource);
+  }
+}
