@@ -47,11 +47,11 @@ export class EventProducer {
     );
   }
 
-    static async NotifyPaymentCompleted(userId: string) {
+  static async NotifyPaymentCompleted(userId: string) {
     this.init();
 
     const notificationPayload = {
-      data:userId,
+      data: userId,
       type: ROUTING_KEYS.NOTIFY_PAYMENT_COMPLETED,
     };
 

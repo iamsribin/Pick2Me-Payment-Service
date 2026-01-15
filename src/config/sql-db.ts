@@ -73,7 +73,9 @@ export const connectSQL = async (): Promise<void> => {
       console.log(`📘 Database '${stripeDb}' already exists`);
     }
 
-  const resTransaction = await client.query(`SELECT 1 FROM pg_database WHERE datname='${transactionDb}'`);
+    const resTransaction = await client.query(
+      `SELECT 1 FROM pg_database WHERE datname='${transactionDb}'`
+    );
     if (resTransaction.rowCount === 0) {
       await client.query(`CREATE DATABASE "${transactionDb}"`);
       console.log(`🆕 Database '${transactionDb}' created`);
@@ -92,7 +94,6 @@ export const connectSQL = async (): Promise<void> => {
     await AppTransactionDataSource.initialize();
     console.log('✅ Transaction SQL Database connected');
   } catch (error) {
-
     console.error('❌ Error connecting to SQL DB:', error);
     throw error;
   }

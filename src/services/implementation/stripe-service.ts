@@ -15,16 +15,16 @@ import { inject, injectable } from 'inversify';
 import { TYPES } from '@/types/inversify-types';
 import { ITransaction } from '@/repositories/interfaces/i-transaction-repository';
 import { getRedisService } from '@pick2me/shared/redis';
-import { BadRequestError, ConflictError, InternalError } from '@pick2me/shared/errors';
+import { BadRequestError, ConflictError, HttpError, InternalError } from '@pick2me/shared/errors';
 import { PaymentMethod, TransactionStatus } from '@/entity/transaction.entity';
 import { IDriverStripeRepository } from '@/repositories/interfaces/i-driver-strip-repository';
 
 @injectable()
 export class StripeService implements IStripeService {
   constructor(
-    @inject(TYPES.TransactionRepository,) private _transactionRepository: ITransaction,
+    @inject(TYPES.TransactionRepository) private _transactionRepository: ITransaction,
     @inject(TYPES.DriverStripeRepository) private _driverStripeRepository: IDriverStripeRepository
-  ) { }
+  ) {}
 
   async createCheckoutSession(data: PaymentReq): Promise<StripeCheckoutSessionRes> {
     try {
@@ -50,8 +50,6 @@ export class StripeService implements IStripeService {
       //Redis cache
       const redisRepo = getRedisService();
       let driverDetails = (await redisRepo.getOnlineDriverDetails(data.driverId)) as any;
-
-      console.log('driverDetails redis', driverDetails);
 
       if (!driverDetails) {
         // fallback: call driver service via gRPC
@@ -88,15 +86,16 @@ export class StripeService implements IStripeService {
         throw InternalError('Failed to validate driver Stripe account');
       }
 
-      let transaction = await this._transactionRepository.findOne({ idempotencyKey: idempotencyKey });
+      let transaction = await this._transactionRepository.findOne({
+        idempotencyKey: idempotencyKey,
+      });
 
       if (transaction) {
         switch (transaction.status) {
           case 'completed':
             throw ConflictError('Payment already processed');
           case 'pending':
-            if (transaction.stripeSessionId)
-              throw ConflictError('Payment already in progress');
+            if (transaction.stripeSessionId) throw ConflictError('Payment already in progress');
             throw ConflictError('Payment already in progress');
           case 'failed':
             await this._transactionRepository.update(transaction.id, {
@@ -172,27 +171,22 @@ export class StripeService implements IStripeService {
 
       try {
         if (data?.bookingId) {
-          await this._transactionRepository.update(
-            data.bookingId,
-            { status: TransactionStatus.FAILED }
-          );
+          await this._transactionRepository.update(data.bookingId, {
+            status: TransactionStatus.FAILED,
+          });
         }
       } catch (upErr) {
         console.error('Failed to update transaction status after stripe error', {
           error: upErr,
         });
       }
-      return {
-        status: StatusCode.InternalServerError,
-        message: err?.message ?? 'Failed to create checkout session',
-      };
+
+      if (err instanceof HttpError) throw err;
+      throw InternalError('something went wrong');
     }
   }
 
-  async handleStripeWebhook(
-    rawBody: Buffer,
-    headers: IncomingHttpHeaders
-  ): Promise<commonRes> {
+  async handleStripeWebhook(rawBody: Buffer, headers: IncomingHttpHeaders): Promise<commonRes> {
     const sig = headers['stripe-signature'] as string;
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
@@ -215,22 +209,14 @@ export class StripeService implements IStripeService {
       throw new Error('payment_intent missing from session');
     }
 
-    const paymentIntent = await stripe.paymentIntents.retrieve(
-      session.payment_intent as string
-    );
+    const paymentIntent = await stripe.paymentIntents.retrieve(session.payment_intent as string);
 
     if (paymentIntent.status !== 'succeeded') {
       throw new Error('Payment not successful');
     }
 
-    const {
-      bookingId,
-      userId,
-      driverId,
-      localTransactionId,
-      adminShare,
-      driverShare,
-    } = session.metadata || {};
+    const { bookingId, userId, driverId, localTransactionId, adminShare, driverShare } =
+      session.metadata || {};
 
     await this._transactionRepository.update(localTransactionId, {
       status: TransactionStatus.COMPLETED,
@@ -245,7 +231,7 @@ export class StripeService implements IStripeService {
       isAddCommission: false,
       paymentMode: 'Stripe',
       paymentStatus: 'Completed',
-      userId
+      userId,
     };
 
     await markBookingAsPaid(paymentData);
@@ -256,5 +242,4 @@ export class StripeService implements IStripeService {
       message: 'Payment confirmed',
     };
   }
-
 }

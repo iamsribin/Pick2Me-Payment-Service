@@ -10,5 +10,4 @@ export function StripeWebhook(fastify: FastifyInstance) {
   fastify.register(rawbody);
 
   fastify.post('/webhook', paymentController.handleStripeWebhook);
-
 }

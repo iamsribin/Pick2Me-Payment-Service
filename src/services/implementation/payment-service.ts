@@ -10,14 +10,12 @@ import { EventProducer } from '@/events/publisher';
 
 @injectable()
 export class PaymentService implements IPaymentService {
-
   ConfirmCashPayment = async (data: {
     bookingId: string;
     userId: string;
     driverId: string;
     amount: number;
   }): Promise<ConfirmCashPaymentDto> => {
-
     const RESULT_TTL_MS = 1 * 24 * 60 * 60 * 1000;
     const FAILED_RESULT_TTL_MS = 60 * 1000;
     const LOCK_TTL_MS = 30 * 1000;
@@ -97,7 +95,7 @@ export class PaymentService implements IPaymentService {
 
       return successResp;
     } catch (error: any) {
-      console.log('error==',error);
+      console.log('error==', error);
 
       const errResp: ConfirmCashPaymentDto = {
         status: StatusCode.InternalServerError,

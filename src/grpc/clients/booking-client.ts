@@ -13,12 +13,12 @@ export interface PaymentData {
 }
 
 export async function markBookingAsPaid(paymentData: PaymentData) {
-  console.log('called booking service',paymentData);
+  console.log('called booking service', paymentData);
 
   return new Promise<any>((resolve, reject) => {
     bookingClient.UpdatePaymentStatus(paymentData, (err: Error | null, response: any) => {
-      console.log('response',response);
-      
+      console.log('response', response);
+
       if (err) return reject(err);
       if (response.status !== StatusCode.OK) return reject(new Error('Failed to update booking'));
       resolve(response);
@@ -38,22 +38,19 @@ export async function rollbackBooking(paymentData: PaymentData) {
 }
 
 export async function addDriverEarnings(paymentData: PaymentData) {
-  console.log('called addDriverEarnings',paymentData);
+  console.log('called addDriverEarnings', paymentData);
   return new Promise<any>((resolve, reject) => {
-    driverClient.AddEarnings(
-      paymentData,
-      async (err: Error | null, response: any) => {
-        console.log('res',response);
-        
-        if (err) return reject(err);
-        if (response.status !== StatusCode.OK) {
-          paymentData.paymentStatus = 'Failed';
-          await rollbackBooking(paymentData);
-          return reject(new Error('Failed to update driver'));
-        }
-        resolve(response);
+    driverClient.AddEarnings(paymentData, async (err: Error | null, response: any) => {
+      console.log('res', response);
+
+      if (err) return reject(err);
+      if (response.status !== StatusCode.OK) {
+        paymentData.paymentStatus = 'Failed';
+        await rollbackBooking(paymentData);
+        return reject(new Error('Failed to update driver'));
       }
-    );
+      resolve(response);
+    });
   });
 }
 

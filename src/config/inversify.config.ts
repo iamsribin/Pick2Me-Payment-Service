@@ -14,7 +14,7 @@ import { UserWalletService } from '@/services/implementation/user-wallet-service
 import { IWalletRepository } from '@/repositories/interfaces/i-wallet-repository';
 import { WalletRepository } from '@/repositories/implementation/wallet.repository';
 import { ITransaction } from '@/repositories/interfaces/i-transaction-repository';
-import {TransactionRepository} from '@/repositories/implementation/transaction.repository';
+import { TransactionRepository } from '@/repositories/implementation/transaction.repository';
 import { AppDataSource, AppStripeDataSource } from './sql-db';
 import { Wallet } from '@/entity/wallet.entity';
 import { Repository } from 'typeorm';
@@ -36,12 +36,14 @@ container.bind<IStripeService>(TYPES.StripeService).to(StripeService);
 container.bind<IUserWalletService>(TYPES.UserWalletService).to(UserWalletService);
 
 container.bind<IWalletRepository>(TYPES.WalletRepository).to(WalletRepository);
-container.bind<ITransaction>(TYPES.TransactionRepository).to(TransactionRepository) .inSingletonScope();
+container
+  .bind<ITransaction>(TYPES.TransactionRepository)
+  .to(TransactionRepository)
+  .inSingletonScope();
 container
   .bind<IDriverStripeRepository>(TYPES.DriverStripeRepository)
   .to(DriverStripeRepository)
   .inSingletonScope();
-
 
 container
   .bind<Repository<Wallet>>(TYPES.WalletRepositoryToken)

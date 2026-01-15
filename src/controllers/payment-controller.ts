@@ -15,12 +15,9 @@ export class PaymentController {
     @inject(TYPES.PaymentService) private _paymentService: IPaymentService,
     @inject(TYPES.StripeService) private _stripeService: IStripeService,
     @inject(TYPES.UserWalletService) private _walletService: IUserWalletService
-  ) { }
+  ) {}
 
-  handleStripeWebhook = async (
-    request: FastifyRequest,
-    reply: FastifyReply
-  ): Promise<void> => {
+  handleStripeWebhook = async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
     const rawBody = request.body as Buffer;
     const headers = request.headers;
 
@@ -51,34 +48,10 @@ export class PaymentController {
       const result = await this._stripeService.createCheckoutSession(paymentData);
       return reply.status(StatusCode.OK).send(result);
     } catch (error: any) {
-      console.log("error", error);
-
       if (error instanceof HttpError) throw error;
       throw InternalError('something went wrong');
     }
   };
-
-  // async ConformCashPayment(
-  //   call: ServerUnaryCall<
-  //     {
-  //       bookingId: string;
-  //       userId: string;
-  //       driverId: string;
-  //       amount: number;
-  //       idempotencyKey: string;
-  //     },
-  //     any
-  //   >,
-  //   callback: sendUnaryData<IResponse<ConformCashPaymentDto>>
-  // ) {
-  //   try {
-  //     const result = await this._paymentService.ConfirmCashPayment(call.request);
-
-  //     callback(null, result);
-  //   } catch (error: any) {
-  //     InternalError(error, callback);
-  //   }
-  // }
 
   walletPayment = async (request: FastifyRequest, reply: FastifyReply) => {
     try {

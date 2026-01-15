@@ -7,7 +7,6 @@ import { isEnvDefined } from './utils/envChecker';
 import { UserEventConsumer } from './events/consumer';
 import { createRedisService } from '@pick2me/shared/redis';
 
-
 const startServer = async () => {
   try {
     isEnvDefined();
@@ -16,7 +15,7 @@ const startServer = async () => {
     await connectSQL();
 
     createRedisService(process.env.REDIS_URL!);
-    
+
     await UserEventConsumer.init();
 
     startGrpcServer();
